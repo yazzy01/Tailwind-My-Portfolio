@@ -1,4 +1,4 @@
-// Featured Projects Data
+// Featured Projects Data - Real deployed projects with live demos
 const featuredProjects = [
     {
         id: 1,
@@ -30,7 +30,7 @@ const featuredProjects = [
         featured: true,
         metrics: {
             rating: "4.9/5",
-            reviews: "500+",
+            contracts: "500+",
             saved: "10hrs/week"
         }
     },
@@ -104,107 +104,158 @@ const featuredProjects = [
     }
 ];
 
-// Render Featured Projects
+// Render Featured Projects with proper image sizing
 function renderFeaturedProjects() {
     const portfolioSection = document.querySelector('#portfolio .container');
     if (!portfolioSection) return;
 
-    // Create the projects HTML
-    const projectsHTML = `
-        <div class="space-y-16">
-            ${featuredProjects.map((project, index) => `
-                <div class="group bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 project-card" data-category="${project.category}">
-                    <div class="grid grid-cols-1 ${index % 2 === 0 ? 'lg:grid-cols-2' : 'lg:grid-cols-2'}">
-                        ${index % 2 === 0 ? `
-                            <div class="relative overflow-hidden h-80 lg:h-full">
+    // Find the projects container and replace it completely
+    const existingGrid = document.querySelector('#portfolio .space-y-12');
+    if (existingGrid) {
+        existingGrid.innerHTML = '';
+    }
+
+    const projectsContainer = existingGrid || document.createElement('div');
+    projectsContainer.className = 'space-y-16';
+
+    featuredProjects.forEach((project, index) => {
+        const isReversed = index % 2 !== 0;
+        
+        const projectHTML = `
+            <div class="group bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 project-card" data-category="${project.category}">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    ${!isReversed ? `
+                        <!-- Image Section - Left -->
+                        <div class="relative overflow-hidden" style="min-height: 400px;">
+                            <div class="absolute inset-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                                 <img src="${project.image}" 
                                      alt="${project.name}" 
-                                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110"
-                                     loading="lazy">
-                                <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 group-hover:from-blue-600/30 group-hover:to-indigo-600/30 transition-all duration-300"></div>
-                                ${project.featured ? `
-                                <div class="absolute top-4 left-4">
-                                    <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">⭐ FEATURED</span>
-                                </div>
-                                ` : ''}
-                            </div>
-                            <div class="p-8 lg:p-12 flex flex-col justify-center">
-                        ` : `
-                            <div class="p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
-                        `}
-                            <div class="flex items-center mb-4 flex-wrap gap-2">
-                                ${project.tags.slice(0, 2).map(tag => `
-                                    <span class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-full">${tag}</span>
-                                `).join('')}
-                                <span class="text-gray-500 dark:text-gray-400 text-sm ml-auto">${project.date}</span>
-                            </div>
-                            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                                ${project.name}
-                            </h3>
-                            <p class="text-gray-600 dark:text-gray-300 text-lg mb-6 leading-relaxed">
-                                ${project.description}
-                            </p>
-                            
-                            <div class="grid grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                ${Object.entries(project.metrics).map(([key, value]) => `
-                                    <div class="text-center">
-                                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${value}</div>
-                                        <div class="text-xs text-gray-600 dark:text-gray-400 capitalize">${key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                                     class="w-full h-full object-cover object-top transition duration-700 group-hover:scale-105"
+                                     style="object-position: top center;"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="absolute inset-0 flex items-center justify-center hidden">
+                                    <div class="text-center p-8">
+                                        <i class="fas fa-image text-6xl text-gray-300 mb-4"></i>
+                                        <p class="text-gray-400">Image Preview</p>
                                     </div>
-                                `).join('')}
-                            </div>
-                            
-                            <div class="mb-6">
-                                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Technologies</h4>
-                                <div class="flex flex-wrap gap-2">
-                                    ${project.tags.map(tag => `
-                                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-3 py-1 rounded-full">${tag}</span>
-                                    `).join('')}
                                 </div>
                             </div>
-                            
-                            <div class="flex flex-wrap gap-4">
-                                <a href="${project.demo}" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer"
-                                   class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                                    <i class="fas fa-external-link-alt mr-2"></i>
-                                    Live Demo
-                                </a>
-                                <a href="${project.github}" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer"
-                                   class="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 font-semibold rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900">
-                                    <i class="fab fa-github mr-2"></i>
-                                    View README
-                                </a>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            ${project.featured ? `
+                            <div class="absolute top-4 left-4 z-10">
+                                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                    <i class="fas fa-star text-xs"></i> FEATURED
+                                </span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <!-- Content Section - Right -->
+                        <div class="p-8 lg:p-10 flex flex-col justify-center">
+                    ` : `
+                        <!-- Content Section - Left -->
+                        <div class="p-8 lg:p-10 flex flex-col justify-center order-2 lg:order-1">
+                    `}
+                        <div class="flex items-center mb-4 flex-wrap gap-2">
+                            ${project.tags.slice(0, 2).map(tag => `
+                                <span class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-semibold px-4 py-1.5 rounded-full">${tag}</span>
+                            `).join('')}
+                            <span class="text-gray-500 dark:text-gray-400 text-sm ml-auto">${project.date}</span>
+                        </div>
+                        
+                        <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                            ${project.name}
+                        </h3>
+                        
+                        <p class="text-gray-600 dark:text-gray-300 text-base lg:text-lg mb-6 leading-relaxed">
+                            ${project.description}
+                        </p>
+                        
+                        <!-- Metrics -->
+                        <div class="grid grid-cols-3 gap-4 mb-6 p-4 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-700 rounded-xl">
+                            ${Object.entries(project.metrics).map(([key, value]) => `
+                                <div class="text-center">
+                                    <div class="text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400">${value}</div>
+                                    <div class="text-xs text-gray-600 dark:text-gray-400 capitalize">${key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- Tech Stack -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">Technologies</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${project.tags.map(tag => `
+                                    <span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs px-3 py-1.5 rounded-full font-medium">${tag}</span>
+                                `).join('')}
                             </div>
                         </div>
-                        ${index % 2 !== 0 ? `
-                            <div class="relative overflow-hidden h-80 lg:h-full order-1 lg:order-2">
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap gap-4">
+                            <a href="${project.demo}" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                                <i class="fas fa-external-link-alt mr-2"></i>
+                                Live Demo
+                            </a>
+                            <a href="${project.github}" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               class="inline-flex items-center px-6 py-3 border-2 border-gray-800 dark:border-gray-300 text-gray-800 dark:text-gray-300 font-semibold rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:bg-gray-800 hover:text-white dark:hover:bg-gray-300 dark:hover:text-gray-900">
+                                <i class="fab fa-github mr-2"></i>
+                                View README
+                            </a>
+                        </div>
+                    </div>
+                    ${isReversed ? `
+                        <!-- Image Section - Right -->
+                        <div class="relative overflow-hidden order-1 lg:order-2" style="min-height: 400px;">
+                            <div class="absolute inset-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                                 <img src="${project.image}" 
                                      alt="${project.name}" 
-                                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110"
-                                     loading="lazy">
-                                <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 group-hover:from-blue-600/30 group-hover:to-indigo-600/30 transition-all duration-300"></div>
-                                ${project.featured ? `
-                                <div class="absolute top-4 left-4">
-                                    <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">⭐ FEATURED</span>
+                                     class="w-full h-full object-cover object-top transition duration-700 group-hover:scale-105"
+                                     style="object-position: top center;"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="absolute inset-0 flex items-center justify-center hidden">
+                                    <div class="text-center p-8">
+                                        <i class="fas fa-image text-6xl text-gray-300 mb-4"></i>
+                                        <p class="text-gray-400">Image Preview</p>
+                                    </div>
                                 </div>
-                                ` : ''}
                             </div>
-                        ` : ''}
-                    </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            ${project.featured ? `
+                            <div class="absolute top-4 right-4 z-10">
+                                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                    <i class="fas fa-star text-xs"></i> FEATURED
+                                </span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
                 </div>
-            `).join('')}
-        </div>
-    `;
+            </div>
+        `;
+        
+        projectsContainer.insertAdjacentHTML('beforeend', projectHTML);
+    });
 
-    // Find the portfolio grid container and replace it
-    const portfolioGrid = document.querySelector('#portfolio .space-y-12');
-    if (portfolioGrid) {
-        portfolioGrid.innerHTML = projectsHTML;
-    }
+    // Add View All Projects button
+    projectsContainer.insertAdjacentHTML('beforeend', `
+        <div class="text-center pt-8">
+            <a href="https://github.com/yazzy01?tab=repositories" 
+               target="_blank"
+               rel="noopener noreferrer"
+               class="inline-flex items-center px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
+                <i class="fab fa-github mr-3 text-xl"></i>
+                View All Projects on GitHub
+                <i class="fas fa-arrow-right ml-3"></i>
+            </a>
+        </div>
+    `);
 }
 
 // Initialize on DOM load
@@ -257,4 +308,3 @@ setTimeout(initPortfolioFilter, 100);
 
 // Export for use in other scripts
 window.featuredProjects = featuredProjects;
-
