@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,307 +30,344 @@
                     },
                     colors: {
                         accent: '#10b981',
-                        dark: '#0f172a',
+                        dark: {
+                            DEFAULT: '#0f172a',
+                            100: '#1e293b',
+                            200: '#334155',
+                            300: '#475569',
+                        }
                     }
                 }
             }
+    }
+    </script>
+    
+    <!-- Dark Mode Script (runs before render to prevent flash) -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'true' || 
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
         }
     </script>
     
     <style>
         html { scroll-behavior: smooth; }
-        body { font-family: 'DM Sans', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
         .gradient-text { 
             background: linear-gradient(135deg, #10b981, #3b82f6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card-hover:hover { transform: translateY(-4px); }
         .animate-fade-up { animation: fadeUp 0.6s ease-out forwards; opacity: 0; }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(20px); } }
         .tech-pill { transition: all 0.2s ease; }
         .tech-pill:hover { transform: scale(1.05); }
+        
+        /* Dark mode specific styles */
+        .dark .card-hover:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .dark .gradient-text { background: linear-gradient(135deg, #34d399, #60a5fa); -webkit-background-clip: text; }
+        
+        /* Theme toggle animation */
+        .theme-toggle { transition: transform 0.3s ease; }
+        .theme-toggle:hover { transform: rotate(15deg); }
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased">
-    <!-- Minimal Navigation -->
-    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-lg border-b border-slate-100 z-50">
+<body class="bg-slate-50 dark:bg-dark text-slate-800 dark:text-slate-100 antialiased transition-colors duration-300">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/80 dark:bg-dark-100/80 backdrop-blur-lg border-b border-slate-100 dark:border-dark-200 z-50 transition-colors duration-300">
         <div class="max-w-5xl mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <a href="#" class="text-xl font-bold">
-                    <span class="text-accent">Y</span>R
+                    <span class="text-accent">Y</span><span class="dark:text-white">R</span>
                 </a>
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="#about" class="text-sm text-slate-600 hover:text-accent transition-colors">About</a>
-                    <a href="#work" class="text-sm text-slate-600 hover:text-accent transition-colors">Work</a>
-                    <a href="#projects" class="text-sm text-slate-600 hover:text-accent transition-colors">Projects</a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#about" class="text-sm text-slate-600 dark:text-slate-300 hover:text-accent transition-colors">About</a>
+                    <a href="#work" class="text-sm text-slate-600 dark:text-slate-300 hover:text-accent transition-colors">Work</a>
+                    <a href="#projects" class="text-sm text-slate-600 dark:text-slate-300 hover:text-accent transition-colors">Projects</a>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="themeToggle" class="theme-toggle w-10 h-10 rounded-full bg-slate-100 dark:bg-dark-200 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-dark-300 transition-colors" aria-label="Toggle dark mode">
+                        <i class="fas fa-sun text-amber-500 dark:hidden"></i>
+                        <i class="fas fa-moon text-blue-400 hidden dark:block"></i>
+                    </button>
+                    
                     <a href="#contact" class="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-emerald-600 transition-colors">
                         Let's Talk
                     </a>
                 </div>
-                <button class="md:hidden text-slate-600" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+                
+                <!-- Mobile: Theme Toggle + Menu -->
+                <div class="flex items-center gap-3 md:hidden">
+                    <button id="themeToggleMobile" class="theme-toggle w-10 h-10 rounded-full bg-slate-100 dark:bg-dark-200 flex items-center justify-center" aria-label="Toggle dark mode">
+                        <i class="fas fa-sun text-amber-500 dark:hidden"></i>
+                        <i class="fas fa-moon text-blue-400 hidden dark:block"></i>
+                    </button>
+                    <button class="text-slate-600 dark:text-slate-300" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="hidden md:hidden pt-4 pb-2 border-t border-slate-100 mt-4">
-                <div class="flex flex-col gap-4">
-                    <a href="#about" class="text-slate-600 hover:text-accent">About</a>
-                    <a href="#work" class="text-slate-600 hover:text-accent">Work</a>
-                    <a href="#projects" class="text-slate-600 hover:text-accent">Projects</a>
-                    <a href="#contact" class="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-medium text-center">Let's Talk</a>
-                </div>
-            </div>
         </div>
+            
+        <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden pt-4 pb-2 border-t border-slate-100 dark:border-dark-200 mt-4">
+                <div class="flex flex-col gap-4">
+                    <a href="#about" class="text-slate-600 dark:text-slate-300 hover:text-accent">About</a>
+                    <a href="#work" class="text-slate-600 dark:text-slate-300 hover:text-accent">Work</a>
+                    <a href="#projects" class="text-slate-600 dark:text-slate-300 hover:text-accent">Projects</a>
+                    <a href="#contact" class="bg-accent text-white px-5 py-2.5 rounded-full text-sm font-medium text-center">Let's Talk</a>
+        </div>
+                    </div>
+                    </div>
     </nav>
 
-    <!-- Hero Section - Clean & Impactful -->
-    <section class="min-h-screen flex items-center pt-20 pb-16 px-6">
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center pt-20 pb-16 px-6 bg-slate-50 dark:bg-dark transition-colors duration-300">
         <div class="max-w-5xl mx-auto w-full">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <!-- Text Content -->
                 <div class="animate-fade-up">
                     <div class="flex items-center gap-2 mb-6">
                         <span class="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
-                        <span class="text-sm text-slate-500 font-medium">Available for Remote Work</span>
-                    </div>
-                    
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
+                        <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">Available for Remote Work</span>
+            </div>
+            
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white leading-tight mb-6">
                         Hi, I'm <span class="gradient-text">Yassir</span>
                         <br>Full-Stack & AI Engineer
                     </h1>
                     
-                    <p class="text-lg text-slate-600 leading-relaxed mb-8 max-w-lg">
+                    <p class="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8 max-w-lg">
                         I build intelligent web systems that combine clean code with AI capabilities. 
                         5+ years crafting scalable solutions for global teams.
                     </p>
                     
                     <!-- Quick Stats -->
                     <div class="flex gap-8 mb-8">
-                        <div>
-                            <div class="text-3xl font-bold text-slate-900">25+</div>
-                            <div class="text-sm text-slate-500">Projects</div>
+                            <div>
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white">25+</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400">Projects</div>
+                            </div>
+                            <div>
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white">5+</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400">Years Exp.</div>
+                            </div>
+                            <div>
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white">3</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400">Languages</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-3xl font-bold text-slate-900">5+</div>
-                            <div class="text-sm text-slate-500">Years Exp.</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold text-slate-900">3</div>
-                            <div class="text-sm text-slate-500">Languages</div>
-                        </div>
-                    </div>
-                    
+                        
                     <!-- CTA Buttons -->
                     <div class="flex flex-wrap gap-4">
                         <a href="#contact" class="bg-accent text-white px-8 py-3.5 rounded-full font-medium hover:bg-emerald-600 transition-all hover:shadow-lg hover:shadow-emerald-500/25">
                             <i class="fas fa-envelope mr-2"></i>Get in Touch
                         </a>
-                        <a href="assets/Yassir Rzigui CV .pdf" download class="border-2 border-slate-200 text-slate-700 px-8 py-3.5 rounded-full font-medium hover:border-accent hover:text-accent transition-colors">
+                        <a href="assets/Yassir Rzigui CV .pdf" download class="border-2 border-slate-200 dark:border-dark-200 text-slate-700 dark:text-slate-200 px-8 py-3.5 rounded-full font-medium hover:border-accent hover:text-accent transition-colors">
                             <i class="fas fa-download mr-2"></i>Download CV
                         </a>
                     </div>
                     
                     <!-- Social Links -->
                     <div class="flex gap-4 mt-8">
-                        <a href="https://github.com/yazzy01" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-accent hover:text-white transition-all">
+                        <a href="https://github.com/yazzy01" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-dark-100 text-slate-600 dark:text-slate-300 hover:bg-accent hover:text-white transition-all">
                             <i class="fab fa-github"></i>
                         </a>
-                        <a href="https://www.linkedin.com/in/yassir-rzigui/" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-accent hover:text-white transition-all">
+                        <a href="https://www.linkedin.com/in/yassir-rzigui/" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-dark-100 text-slate-600 dark:text-slate-300 hover:bg-accent hover:text-white transition-all">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
-                    </div>
                 </div>
-                
+            </div>
+
                 <!-- Profile Image -->
                 <div class="relative animate-fade-up" style="animation-delay: 0.2s">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-3xl blur-3xl opacity-20"></div>
-                        <img src="assets/profile.png" alt="Yassir Rzigui" class="relative rounded-3xl w-full max-w-md mx-auto shadow-2xl">
+                <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-3xl blur-3xl opacity-20 dark:opacity-30"></div>
+                        <img src="assets/profile.png" alt="Yassir Rzigui" class="relative rounded-3xl w-full max-w-md mx-auto shadow-2xl dark:shadow-emerald-500/10">
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section - Concise -->
-    <section id="about" class="py-24 px-6 bg-white">
+    <!-- About Section -->
+    <section id="about" class="py-24 px-6 bg-white dark:bg-dark-100 transition-colors duration-300">
         <div class="max-w-5xl mx-auto">
             <div class="grid lg:grid-cols-2 gap-16 items-start">
                 <!-- Left: About Text -->
                 <div>
                     <span class="text-accent font-medium text-sm uppercase tracking-wider">About Me</span>
-                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mt-3 mb-6">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-3 mb-6">
                         Building the future with code & AI
                     </h2>
-                    <div class="space-y-4 text-slate-600 leading-relaxed">
+                    <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed">
                         <p>
-                            I'm a <strong class="text-slate-900">Full-Stack & AI Engineer</strong> passionate about creating 
-                            intelligent applications that solve real problems. Currently at <strong class="text-slate-900">Sigma Group</strong>, 
+                            I'm a <strong class="text-slate-900 dark:text-white">Full-Stack & AI Engineer</strong> passionate about creating 
+                            intelligent applications that solve real problems. Currently at <strong class="text-slate-900 dark:text-white">Sigma Group</strong>, 
                             I build AI-integrated tools used by global teams.
                         </p>
                         <p>
                             I specialize in connecting modern frontend experiences with powerful AI backends—think 
-                            <strong class="text-slate-900">LangChain pipelines</strong>, <strong class="text-slate-900">OpenAI integrations</strong>, 
+                            <strong class="text-slate-900 dark:text-white">LangChain pipelines</strong>, <strong class="text-slate-900 dark:text-white">OpenAI integrations</strong>, 
                             and automated workflows that save hours of manual work.
                         </p>
-                    </div>
-                    
+            </div>
+            
                     <!-- Languages -->
                     <div class="mt-8 flex gap-4">
-                        <div class="px-4 py-2 bg-slate-100 rounded-lg text-sm">
-                            <span class="font-semibold">EN</span> <span class="text-slate-500">Advanced</span>
+                        <div class="px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm">
+                            <span class="font-semibold dark:text-white">EN</span> <span class="text-slate-500 dark:text-slate-400">Advanced</span>
+                            </div>
+                        <div class="px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm">
+                            <span class="font-semibold dark:text-white">FR</span> <span class="text-slate-500 dark:text-slate-400">Native</span>
                         </div>
-                        <div class="px-4 py-2 bg-slate-100 rounded-lg text-sm">
-                            <span class="font-semibold">FR</span> <span class="text-slate-500">Native</span>
-                        </div>
-                        <div class="px-4 py-2 bg-slate-100 rounded-lg text-sm">
-                            <span class="font-semibold">AR</span> <span class="text-slate-500">Native</span>
-                        </div>
+                        <div class="px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm">
+                            <span class="font-semibold dark:text-white">AR</span> <span class="text-slate-500 dark:text-slate-400">Native</span>
+                    </div>
                     </div>
                 </div>
                 
                 <!-- Right: Tech Stack -->
                 <div>
-                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Tech I Work With</h3>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">Tech I Work With</h3>
                     
                     <div class="space-y-6">
                         <!-- Frontend -->
                         <div>
-                            <span class="text-xs uppercase tracking-wider text-slate-400 mb-3 block">Frontend</span>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 block">Frontend</span>
                             <div class="flex flex-wrap gap-2">
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">React</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">Next.js</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">TypeScript</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">Tailwind</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">React</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">Next.js</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">TypeScript</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">Tailwind</span>
                             </div>
                         </div>
                         
                         <!-- Backend -->
                         <div>
-                            <span class="text-xs uppercase tracking-wider text-slate-400 mb-3 block">Backend</span>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 block">Backend</span>
                             <div class="flex flex-wrap gap-2">
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">Node.js</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">Express</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">FastAPI</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">PostgreSQL</span>
-                            </div>
-                        </div>
-                        
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">Node.js</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">Express</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">FastAPI</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">PostgreSQL</span>
+                    </div>
+                </div>
+                
                         <!-- AI & Tools -->
-                        <div>
-                            <span class="text-xs uppercase tracking-wider text-slate-400 mb-3 block">AI & DevOps</span>
+                <div>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 block">AI & DevOps</span>
                             <div class="flex flex-wrap gap-2">
-                                <span class="tech-pill px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium">LangChain</span>
-                                <span class="tech-pill px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium">OpenAI API</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">Docker</span>
-                                <span class="tech-pill px-4 py-2 bg-slate-100 rounded-lg text-sm font-medium">AWS</span>
-                            </div>
-                        </div>
+                                <span class="tech-pill px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-sm font-medium">LangChain</span>
+                                <span class="tech-pill px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-sm font-medium">OpenAI API</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">Docker</span>
+                                <span class="tech-pill px-4 py-2 bg-slate-100 dark:bg-dark-200 rounded-lg text-sm font-medium dark:text-slate-200">AWS</span>
+                                </div>
+                                </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Work Experience - Timeline Style -->
-    <section id="work" class="py-24 px-6 bg-slate-50">
+    <!-- Work Experience -->
+    <section id="work" class="py-24 px-6 bg-slate-50 dark:bg-dark transition-colors duration-300">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-16">
                 <span class="text-accent font-medium text-sm uppercase tracking-wider">Experience</span>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mt-3">Where I've Worked</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-3">Where I've Worked</h2>
             </div>
             
             <div class="space-y-8">
                 <!-- Current Role -->
-                <div class="bg-white rounded-2xl p-8 card-hover border border-slate-100">
+                <div class="bg-white dark:bg-dark-100 rounded-2xl p-8 card-hover border border-slate-100 dark:border-dark-200 shadow-sm dark:shadow-none transition-colors duration-300">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
                         <div>
                             <span class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full mb-2">Current</span>
-                            <h3 class="text-xl font-bold text-slate-900">Full-Stack & AI Engineer</h3>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Full-Stack & AI Engineer</h3>
                             <p class="text-accent font-medium">Sigma Group</p>
-                        </div>
+            </div>
                         <span class="text-sm text-slate-400">Jan 2024 - Present</span>
-                    </div>
-                    <p class="text-slate-600">
+                            </div>
+                    <p class="text-slate-600 dark:text-slate-300">
                         Building AI-integrated internal tools and dashboards. Created LangChain pipelines connecting NLP scripts with React panels. 
-                        Automated workflows reducing manual review by <strong>40%</strong>.
+                        Automated workflows reducing manual review by <strong class="text-slate-900 dark:text-white">40%</strong>.
                     </p>
-                </div>
+                        </div>
                 
                 <!-- Contract AI -->
-                <div class="bg-white rounded-2xl p-8 card-hover border border-slate-100">
+                <div class="bg-white dark:bg-dark-100 rounded-2xl p-8 card-hover border border-slate-100 dark:border-dark-200 shadow-sm dark:shadow-none transition-colors duration-300">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Software Engineer</h3>
-                            <p class="text-blue-600 font-medium">Contract AI</p>
-                        </div>
+                                <div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Software Engineer</h3>
+                            <p class="text-blue-600 dark:text-blue-400 font-medium">Contract AI</p>
+                                    </div>
                         <span class="text-sm text-slate-400">Feb 2024 - Jul 2025</span>
-                    </div>
-                    <p class="text-slate-600">
+                                </div>
+                    <p class="text-slate-600 dark:text-slate-300">
                         Developed legal document automation platform with Next.js & PostgreSQL. 
                         Integrated AI APIs for clause extraction and document summarization.
                     </p>
-                </div>
-                
+                            </div>
+                            
                 <!-- Outlier -->
-                <div class="bg-white rounded-2xl p-8 card-hover border border-slate-100">
+                <div class="bg-white dark:bg-dark-100 rounded-2xl p-8 card-hover border border-slate-100 dark:border-dark-200 shadow-sm dark:shadow-none transition-colors duration-300">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900">AI Workflow Engineer</h3>
-                            <p class="text-purple-600 font-medium">Outlier AI</p>
-                        </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">AI Workflow Engineer</h3>
+                            <p class="text-purple-600 dark:text-purple-400 font-medium">Outlier AI</p>
+                            </div>
                         <span class="text-sm text-slate-400">Feb 2024 - Present</span>
-                    </div>
-                    <p class="text-slate-600">
-                        Fine-tuned LLMs using RLHF. Automated data validation achieving <strong>97% accuracy</strong> across multilingual datasets. 
-                        Reduced manual QA by <strong>15 hours weekly</strong>.
+                        </div>
+                    <p class="text-slate-600 dark:text-slate-300">
+                        Fine-tuned LLMs using RLHF. Automated data validation achieving <strong class="text-slate-900 dark:text-white">97% accuracy</strong> across multilingual datasets. 
+                        Reduced manual QA by <strong class="text-slate-900 dark:text-white">15 hours weekly</strong>.
                     </p>
                 </div>
                 
                 <!-- Freelance -->
-                <div class="bg-white rounded-2xl p-8 card-hover border border-slate-100">
+                <div class="bg-white dark:bg-dark-100 rounded-2xl p-8 card-hover border border-slate-100 dark:border-dark-200 shadow-sm dark:shadow-none transition-colors duration-300">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Full-Stack Developer</h3>
-                            <p class="text-orange-600 font-medium">Freelance</p>
-                        </div>
+                                <div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Full-Stack Developer</h3>
+                            <p class="text-orange-600 dark:text-orange-400 font-medium">Freelance</p>
+                                    </div>
                         <span class="text-sm text-slate-400">Apr 2021 - Dec 2023</span>
-                    </div>
-                    <p class="text-slate-600">
-                        Delivered <strong>25+ SaaS projects</strong> for clients in e-commerce, health, and education. 
+                                </div>
+                    <p class="text-slate-600 dark:text-slate-300">
+                        Delivered <strong class="text-slate-900 dark:text-white">25+ SaaS projects</strong> for clients in e-commerce, health, and education. 
                         Integrated AI features—chatbots, recommendation engines, smart search.
                     </p>
-                </div>
-            </div>
-        </div>
+                                </div>
+                            </div>
+                            </div>
     </section>
 
     <!-- Projects Section -->
-    <section id="projects" class="py-24 px-6 bg-white">
+    <section id="projects" class="py-24 px-6 bg-white dark:bg-dark-100 transition-colors duration-300">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-16">
                 <span class="text-accent font-medium text-sm uppercase tracking-wider">Portfolio</span>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mt-3">Featured Projects</h2>
-                <p class="text-slate-500 mt-4 max-w-xl mx-auto">Real applications I've built with live demos</p>
-            </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-3">Featured Projects</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-4 max-w-xl mx-auto">Real applications I've built with live demos</p>
+                        </div>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Project 1: Auto Profil Builder (Private Repo) -->
-                <div class="group bg-slate-50 rounded-2xl overflow-hidden card-hover border border-slate-100">
+                <div class="group bg-slate-50 dark:bg-dark rounded-2xl overflow-hidden card-hover border border-slate-100 dark:border-dark-200 transition-colors duration-300">
                     <div class="aspect-video overflow-hidden">
                         <img src="assets/auto-profil.png" alt="Auto Profil Builder" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
-                    </div>
+                                    </div>
                     <div class="p-6">
                         <div class="flex gap-2 mb-3">
-                            <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md font-medium">AI</span>
-                            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">React</span>
-                            <span class="text-xs px-2 py-1 bg-slate-200 text-slate-600 rounded-md font-medium">Private</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">Auto Profil Builder</h3>
-                        <p class="text-slate-500 text-sm mb-4">AI-powered portfolio generator using Perplexity API</p>
+                            <span class="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-md font-medium">AI</span>
+                            <span class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md font-medium">React</span>
+                            <span class="text-xs px-2 py-1 bg-slate-200 dark:bg-dark-200 text-slate-600 dark:text-slate-400 rounded-md font-medium">Private</span>
+                                </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Auto Profil Builder</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">AI-powered portfolio generator using Perplexity API</p>
                         <div class="flex gap-3">
                             <a href="https://auto-profil-v3.vercel.app/" target="_blank" class="text-sm text-accent font-medium hover:underline">
                                 <i class="fas fa-external-link-alt mr-1"></i>Live Demo
@@ -340,18 +377,18 @@
                 </div>
                 
                 <!-- Project 2: Contract AI (Private Repo) -->
-                <div class="group bg-slate-50 rounded-2xl overflow-hidden card-hover border border-slate-100">
+                <div class="group bg-slate-50 dark:bg-dark rounded-2xl overflow-hidden card-hover border border-slate-100 dark:border-dark-200 transition-colors duration-300">
                     <div class="aspect-video overflow-hidden">
                         <img src="assets/Contract-AI.png" alt="Contract AI" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
-                    </div>
+                            </div>
                     <div class="p-6">
                         <div class="flex gap-2 mb-3">
-                            <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md font-medium">LegalTech</span>
-                            <span class="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-md font-medium">Next.js</span>
-                            <span class="text-xs px-2 py-1 bg-slate-200 text-slate-600 rounded-md font-medium">Private</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">Contract AI</h3>
-                        <p class="text-slate-500 text-sm mb-4">Legal document automation with AI clause extraction</p>
+                            <span class="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-md font-medium">LegalTech</span>
+                            <span class="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-md font-medium">Next.js</span>
+                            <span class="text-xs px-2 py-1 bg-slate-200 dark:bg-dark-200 text-slate-600 dark:text-slate-400 rounded-md font-medium">Private</span>
+                                    </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Contract AI</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Legal document automation with AI clause extraction</p>
                         <div class="flex gap-3">
                             <a href="https://contract-ai-omega.vercel.app/" target="_blank" class="text-sm text-accent font-medium hover:underline">
                                 <i class="fas fa-external-link-alt mr-1"></i>Live Demo
@@ -361,18 +398,18 @@
                 </div>
                 
                 <!-- Project 3: CineDiscover (Private Repo) -->
-                <div class="group bg-slate-50 rounded-2xl overflow-hidden card-hover border border-slate-100">
+                <div class="group bg-slate-50 dark:bg-dark rounded-2xl overflow-hidden card-hover border border-slate-100 dark:border-dark-200 transition-colors duration-300">
                     <div class="aspect-video overflow-hidden">
                         <img src="assets/CineDiscover.png" alt="CineDiscover" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
-                    </div>
+                        </div>
                     <div class="p-6">
                         <div class="flex gap-2 mb-3">
-                            <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md font-medium">AI</span>
-                            <span class="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded-md font-medium">TMDB</span>
-                            <span class="text-xs px-2 py-1 bg-slate-200 text-slate-600 rounded-md font-medium">Private</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">CineDiscover</h3>
-                        <p class="text-slate-500 text-sm mb-4">AI movie recommendations with natural language input</p>
+                            <span class="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-md font-medium">AI</span>
+                            <span class="text-xs px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-md font-medium">TMDB</span>
+                            <span class="text-xs px-2 py-1 bg-slate-200 dark:bg-dark-200 text-slate-600 dark:text-slate-400 rounded-md font-medium">Private</span>
+                            </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">CineDiscover</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">AI movie recommendations with natural language input</p>
                         <div class="flex gap-3">
                             <a href="https://cinediscover.vercel.app/" target="_blank" class="text-sm text-accent font-medium hover:underline">
                                 <i class="fas fa-external-link-alt mr-1"></i>Live Demo
@@ -382,78 +419,78 @@
                 </div>
                 
                 <!-- Project 4: NutriStepPro (Private Repo) -->
-                <div class="group bg-slate-50 rounded-2xl overflow-hidden card-hover border border-slate-100">
+                <div class="group bg-slate-50 dark:bg-dark rounded-2xl overflow-hidden card-hover border border-slate-100 dark:border-dark-200 transition-colors duration-300">
                     <div class="aspect-video overflow-hidden">
                         <img src="assets/NutriStepPro.png" alt="NutriStepPro" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <div class="flex gap-2 mb-3">
-                            <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-md font-medium">Health</span>
-                            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">React</span>
-                            <span class="text-xs px-2 py-1 bg-slate-200 text-slate-600 rounded-md font-medium">Private</span>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">NutriStepPro</h3>
-                        <p class="text-slate-500 text-sm mb-4">Nutrition & fitness tracking platform</p>
+                        <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md font-medium">Health</span>
+                            <span class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md font-medium">React</span>
+                            <span class="text-xs px-2 py-1 bg-slate-200 dark:bg-dark-200 text-slate-600 dark:text-slate-400 rounded-md font-medium">Private</span>
+                            </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">NutriStepPro</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Nutrition & fitness tracking platform</p>
                         <div class="flex gap-3">
                             <a href="https://nutri-step-pro.vercel.app/" target="_blank" class="text-sm text-accent font-medium hover:underline">
                                 <i class="fas fa-external-link-alt mr-1"></i>Live Demo
-                            </a>
+                                    </a>
+                                </div>
                         </div>
                     </div>
-                </div>
-                
+
                 <!-- Project 5: RentingAll (Public Repo) -->
-                <div class="group bg-slate-50 rounded-2xl overflow-hidden card-hover border border-slate-100">
+                <div class="group bg-slate-50 dark:bg-dark rounded-2xl overflow-hidden card-hover border border-slate-100 dark:border-dark-200 transition-colors duration-300">
                     <div class="aspect-video overflow-hidden">
                         <img src="assets/RentingAll.png" alt="RentingAll" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <div class="flex gap-2 mb-3">
-                            <span class="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium">Marketplace</span>
-                            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">Next.js</span>
-                            <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-md font-medium">Open Source</span>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">RentingAll</h3>
-                        <p class="text-slate-500 text-sm mb-4">P2P vehicle rental marketplace with Prisma</p>
+                        <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-md font-medium">Marketplace</span>
+                            <span class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md font-medium">Next.js</span>
+                            <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md font-medium">Open Source</span>
+                            </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">RentingAll</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">P2P vehicle rental marketplace with Prisma</p>
                         <div class="flex gap-3">
                             <a href="https://renting-all.vercel.app/" target="_blank" class="text-sm text-accent font-medium hover:underline">
                                 <i class="fas fa-external-link-alt mr-1"></i>Live Demo
                             </a>
-                            <a href="https://github.com/yazzy01/renting-all" target="_blank" class="text-sm text-slate-500 hover:text-slate-700">
+                            <a href="https://github.com/yazzy01/renting-all" target="_blank" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
                                 <i class="fab fa-github mr-1"></i>View Code
-                            </a>
+                                    </a>
+                                </div>
                         </div>
                     </div>
-                </div>
-                
+
                 <!-- Project 6: SmartLearn (Public Repo) -->
-                <div class="group bg-slate-50 rounded-2xl overflow-hidden card-hover border border-slate-100">
+                <div class="group bg-slate-50 dark:bg-dark rounded-2xl overflow-hidden card-hover border border-slate-100 dark:border-dark-200 transition-colors duration-300">
                     <div class="aspect-video overflow-hidden">
                         <img src="assets/SmartLearn.png" alt="SmartLearn" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <div class="flex gap-2 mb-3">
-                            <span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-md font-medium">EdTech</span>
-                            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">Express</span>
-                            <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-md font-medium">Open Source</span>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">SmartLearn</h3>
-                        <p class="text-slate-500 text-sm mb-4">E-learning platform with progress tracking</p>
+                        <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-md font-medium">EdTech</span>
+                            <span class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md font-medium">Express</span>
+                            <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md font-medium">Open Source</span>
+                            </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">SmartLearn</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">E-learning platform with progress tracking</p>
                         <div class="flex gap-3">
                             <a href="https://learnsphere-starter.vercel.app/" target="_blank" class="text-sm text-accent font-medium hover:underline">
                                 <i class="fas fa-external-link-alt mr-1"></i>Live Demo
                             </a>
-                            <a href="https://github.com/yazzy01/learnsphere-starter" target="_blank" class="text-sm text-slate-500 hover:text-slate-700">
+                            <a href="https://github.com/yazzy01/learnsphere-starter" target="_blank" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
                                 <i class="fab fa-github mr-1"></i>View Code
-                            </a>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
+
             <!-- GitHub Link -->
             <div class="text-center mt-12">
-                <a href="https://github.com/yazzy01?tab=repositories" target="_blank" class="inline-flex items-center gap-2 text-slate-600 hover:text-accent transition-colors">
+                <a href="https://github.com/yazzy01?tab=repositories" target="_blank" class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-accent transition-colors">
                     <i class="fab fa-github"></i>
                     <span>View all projects on GitHub</span>
                     <i class="fas fa-arrow-right text-sm"></i>
@@ -462,36 +499,36 @@
         </div>
     </section>
 
-    <!-- What I Offer - Services -->
-    <section class="py-24 px-6 bg-slate-900 text-white">
+    <!-- Services Section -->
+    <section class="py-24 px-6 bg-slate-900 dark:bg-black transition-colors duration-300">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-16">
                 <span class="text-emerald-400 font-medium text-sm uppercase tracking-wider">Services</span>
-                <h2 class="text-3xl md:text-4xl font-bold mt-3">How I Can Help</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mt-3">How I Can Help</h2>
             </div>
-            
+
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="text-center p-8">
                     <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-code text-emerald-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Full-Stack Development</h3>
+                        </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Full-Stack Development</h3>
                     <p class="text-slate-400">End-to-end web applications with React, Next.js, Node.js, and modern databases.</p>
                 </div>
-                
+
                 <div class="text-center p-8">
                     <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-robot text-blue-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">AI Integration</h3>
+                        </div>
+                    <h3 class="text-xl font-bold text-white mb-3">AI Integration</h3>
                     <p class="text-slate-400">LangChain workflows, OpenAI API integrations, chatbots, and intelligent automation.</p>
                 </div>
-                
+
                 <div class="text-center p-8">
                     <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-globe text-purple-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Remote Collaboration</h3>
+                        </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Remote Collaboration</h3>
                     <p class="text-slate-400">5+ years async experience with global teams. Clear communication, reliable delivery.</p>
                 </div>
             </div>
@@ -499,11 +536,11 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-24 px-6 bg-white">
+    <section id="contact" class="py-24 px-6 bg-white dark:bg-dark-100 transition-colors duration-300">
         <div class="max-w-3xl mx-auto text-center">
             <span class="text-accent font-medium text-sm uppercase tracking-wider">Contact</span>
-            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mt-3 mb-6">Let's Work Together</h2>
-            <p class="text-slate-600 mb-12 text-lg">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-3 mb-6">Let's Work Together</h2>
+            <p class="text-slate-600 dark:text-slate-300 mb-12 text-lg">
                 Looking for a reliable developer for your next project? I'm available for remote positions and freelance contracts.
             </p>
             
@@ -513,34 +550,34 @@
                     <i class="fas fa-envelope"></i>
                     rziguiyassir@gmail.com
                 </a>
-                <a href="https://www.linkedin.com/in/yassir-rzigui/" target="_blank" class="border-2 border-slate-200 text-slate-700 px-8 py-4 rounded-full font-medium hover:border-blue-500 hover:text-blue-600 transition-colors inline-flex items-center justify-center gap-2">
+                <a href="https://www.linkedin.com/in/yassir-rzigui/" target="_blank" class="border-2 border-slate-200 dark:border-dark-200 text-slate-700 dark:text-slate-200 px-8 py-4 rounded-full font-medium hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center justify-center gap-2">
                     <i class="fab fa-linkedin"></i>
                     Connect on LinkedIn
                 </a>
-            </div>
-            
+                </div>
+                
             <!-- Quick Info -->
-            <div class="flex flex-wrap justify-center gap-8 text-sm text-slate-500">
+            <div class="flex flex-wrap justify-center gap-8 text-sm text-slate-500 dark:text-slate-400">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-map-marker-alt text-accent"></i>
                     <span>Morocco (Remote)</span>
-                </div>
+                                </div>
                 <div class="flex items-center gap-2">
                     <i class="fas fa-phone text-accent"></i>
                     <span>+212 6 34 81 48 54</span>
-                </div>
+                                </div>
                 <div class="flex items-center gap-2">
                     <i class="fas fa-clock text-accent"></i>
                     <span>GMT+1 Timezone</span>
-                </div>
+                            </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-8 px-6 bg-slate-50 border-t border-slate-100">
+    <footer class="py-8 px-6 bg-slate-50 dark:bg-dark border-t border-slate-100 dark:border-dark-200 transition-colors duration-300">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-slate-500 text-sm">© 2024 Yassir Rzigui. Built with passion.</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">© 2024 Yassir Rzigui. Built with passion.</p>
             <div class="flex gap-4">
                 <a href="https://github.com/yazzy01" target="_blank" class="text-slate-400 hover:text-accent transition-colors">
                     <i class="fab fa-github text-lg"></i>
@@ -552,8 +589,19 @@
         </div>
     </footer>
 
-    <!-- Smooth Scroll & Mobile Menu Script -->
+    <!-- Scripts -->
     <script>
+        // Dark Mode Toggle
+            function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem('darkMode', html.classList.contains('dark'));
+        }
+        
+        // Add event listeners to both toggle buttons
+        document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
+        document.getElementById('themeToggleMobile').addEventListener('click', toggleDarkMode);
+        
         // Close mobile menu on link click
         document.querySelectorAll('#mobileMenu a').forEach(link => {
             link.addEventListener('click', () => {
@@ -566,10 +614,10 @@
             const nav = document.querySelector('nav');
             if (window.scrollY > 50) {
                 nav.classList.add('shadow-sm');
-            } else {
+                                } else {
                 nav.classList.remove('shadow-sm');
             }
         });
     </script>
 </body>
-</html>
+</html> 
